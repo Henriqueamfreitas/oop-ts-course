@@ -77,11 +77,22 @@ class B extends A {
 
 
 // cumulative review
-1. Explain the difference between property and method.
-2. Explain public, private, and protected.
-3. Explain static vs instance member.
-4. Explain extends, super, and overriding.
-5. Predict the output:
+// 1. Explain the difference between property and method.
+  // property is a chracteristict of the class instance
+  // method is a function
+// 2. Explain public, private, and protected.
+  // public: every item can access it
+  // private:: just elements inside the class can access it
+  // protected: just elements inside the class and the subclass can access it
+// 3. Explain static vs instance member.
+  // static is a chacrtteristic for the whole class (its the same for every instance); each instance has 
+  // its own values forthe properties
+// 4. Explain extends, super, and overriding.
+  // extends means that one class gets the properties and methods of the others (public and protected)
+  // super is uised for the subclass to tell the class to run its constructor
+  // overriding: to assing a different value for a property or method in subclass 
+// 5. Predict the output:
+
 class Device {
   static count = 0;
 
@@ -107,13 +118,20 @@ class Phone extends Device {
 const a = new Device("Lamp");
 const b = new Phone("Pixel", "123");
 
-a.turnOn();
-b.turnOn();
-console.log(Device.count);
-6. Fix the access problem:
+a.turnOn(); // Lamp on
+b.turnOn(); // Pixel phone on
+console.log(Device.count); //2
+
+
+
+// 6. Fix the access problem:
 class Account {
   private balance = 0;
+  public addBalance(amount: number) {
+    this.balance += amount
+  }
 }
 
 const account = new Account();
-account.balance += 100;
+// account.balance += 100;
+account.addBalance(100)
