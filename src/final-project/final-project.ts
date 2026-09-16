@@ -64,7 +64,11 @@ class BugTask extends Task {
   }
 
   override summary(): string {
-    return `${this.title} - Bugtask - Estimated hours: ${this.estimateHours()}`
+    return `====== Bugtask report ======
+[${this.id}] ${this.title}
+Status: ${this.getStatus()}
+Estimated hours: ${this.estimateHours()}
+    `
   }
 }
 
@@ -85,7 +89,14 @@ class FeatureTask extends Task {
     return 0
   }
 
-  override summary(): string { return `${this.title} - FeatureTask - Complexity: ${this.complexity} - Estimated hours: ${this.estimateHours()}` }
+  override summary(): string {
+    // return `${this.title} - FeatureTask - Complexity: ${this.complexity} - Estimated hours: ${this.estimateHours()}` 
+    return `====== Featuretask report ======
+[${this.id}] ${this.title}
+Complexity: ${this.complexity}
+Status: ${this.getStatus()}
+Estimated hours: ${this.estimateHours()}
+    `}
 }
 
 class ResearchTask extends Task {
@@ -97,7 +108,13 @@ class ResearchTask extends Task {
 
   estimateHours(): number { return 2 } /////
 
-  override summary(): string { return `${this.title} - ResearchTask - Topic: ${this.topic} - Estimated hours: ${this.estimateHours()}` }
+  override summary(): string {
+    return `====== Researchtask report ======
+[${this.id}] ${this.title}
+Topic: ${this.topic}
+Status: ${this.getStatus()}
+Estimated hours: ${this.estimateHours()}
+    `}
 }
 
 interface TaskRepository {
@@ -140,7 +157,7 @@ class TaskService {
     this.repository.add(newFeature)
     return newFeature.id
   }
-  
+
   createResearch(title: string, topic: string) {
     const newResearch = new ResearchTask(topic, title, this.notifier)
     this.repository.add(newResearch)
@@ -171,3 +188,8 @@ taskService.completeTask(task1)
 taskService.completeTask(task2)
 taskService.completeTask(task3)
 taskService.printReport()
+
+console.log(taskService)
+console.log(task1)
+console.log(task2)
+console.log(task3)

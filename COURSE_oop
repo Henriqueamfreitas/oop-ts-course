@@ -1,0 +1,3050 @@
+# Object-Oriented Programming With TypeScript
+
+Audience: you are comfortable programming, but you want a stronger foundation in OOP before returning to design patterns.
+
+Goal: build clear mental models for classes, objects, inheritance, interfaces, abstract classes, composition, polymorphism, access modifiers, static members, and dependency injection.
+
+How to study:
+
+1. Read the learning goal.
+2. Before reading the explanation, try to define the topic from memory.
+3. Type the code example by hand. Do not copy-paste.
+4. Predict the output before running it.
+5. Do the exercises.
+6. Take the mini test from memory.
+7. Check the answer key only after finishing the whole test.
+8. Move on only when you meet the criteria to proceed.
+
+Learning methods used:
+
+- Active recall: you must explain concepts in your own words.
+- Retrieval practice: every section has a mini test.
+- Worked examples: each section has a complete example.
+- Faded examples: some exercises give partial code for you to complete.
+- Deliberate practice: exercises target specific weak spots.
+- Spaced repetition: review schedule below.
+- Interleaving: cumulative tests mix older and newer topics.
+- Low-stakes testing: frequent short tests.
+- Immediate feedback: answer keys are included after each test block.
+- Project-based application: the final project forces you to combine everything.
+
+Suggested schedule:
+
+- Day 1: Sections 1-2
+- Day 2: Section 3 + Cumulative Review 1
+- Day 3: Sections 4-5
+- Day 4: Section 6 + Cumulative Review 2
+- Day 5: Sections 7-8
+- Day 6: Sections 9-10 + Cumulative Review 3
+- Day 7: Sections 11-12
+- Day 8: Sections 13-14 + Cumulative Review 4
+- Day 9-10: Final project
+- Day 11: Final exam
+- Day 14: Retake cumulative tests without notes
+- Day 21: Rebuild the final project from memory
+
+Rules for practice:
+
+- Say definitions out loud or write them.
+- When predicting output, write the output before running the code.
+- If you get a test wrong, write a one-sentence correction.
+- If a concept feels fuzzy, create a tiny code example for it.
+- Do not rush to design patterns until you can explain these basics without notes.
+
+TypeScript setup:
+
+```bash
+npm create vite@latest oop-ts-course -- --template vanilla-ts
+cd oop-ts-course
+npm install
+npm run dev
+```
+
+You can also use:
+
+```bash
+npm install -D typescript tsx
+npx tsx src/main.ts
+```
+
+Use `"strict": true` in `tsconfig.json` if possible.
+
+---
+
+## Section 1: Class vs Object vs Instance
+
+### 1. Learning goal
+
+Explain the difference between a class, an object, and an instance. Create objects from a class and inspect their independent state.
+
+### 2. Simple explanation
+
+A class is a blueprint. An object is a concrete value created from that blueprint. An instance is an object that was created from a specific class.
+
+In TypeScript, classes describe both behavior and the shape of objects created with `new`.
+
+### 3. Code example
+
+```ts
+class Dog {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  bark(): void {
+    console.log(`${this.name} says woof`);
+  }
+}
+
+const dog1 = new Dog("Rex");
+const dog2 = new Dog("Luna");
+
+dog1.bark();
+dog2.bark();
+
+console.log(dog1 === dog2);
+console.log(dog1 instanceof Dog);
+```
+
+Expected output:
+
+```txt
+Rex says woof
+Luna says woof
+false
+true
+```
+
+### 4. Raw intuition
+
+Think of `Dog` as a recipe. `dog1` and `dog2` are two separate meals made from that recipe. Same recipe, different actual things.
+
+The class is not the dog. The object is the dog.
+
+### 5. Common mistakes
+
+- Saying "the class is the object." The class creates objects.
+- Thinking two objects with the same data are the same object.
+- Forgetting `new`, which means the constructor is not called correctly.
+- Confusing the variable name with the object itself.
+
+### 6. Exercises
+
+1. Create a `Book` class with a `title` property.
+2. Create two `Book` objects with different titles.
+3. Print both titles.
+4. Predict whether `book1 === book2` is `true` or `false`.
+5. Write a one-sentence definition of class, object, and instance.
+
+Faded example:
+
+```ts
+class Book {
+  title: string;
+
+  constructor(title: string) {
+    // fill this in
+  }
+}
+
+const book1 = new Book("Clean Code");
+const book2 = new Book("Refactoring");
+
+console.log(/* print title */);
+console.log(/* compare objects */);
+```
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What is a class?
+2. What is an object?
+3. What does `new Dog("Rex")` do?
+4. Predict the output:
+
+```ts
+class User {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+const a = new User("Ana");
+const b = new User("Ana");
+
+console.log(a.name);
+console.log(a === b);
+```
+
+### Answer key
+
+1. A class is a blueprint/template for creating objects with data and behavior.
+2. An object is a concrete value in memory.
+3. It creates a new `Dog` object and runs the constructor with `"Rex"`.
+4. Output:
+
+```txt
+Ana
+false
+```
+
+The two users have the same name, but they are different objects.
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Define class, object, and instance in your own words.
+- Create two objects from the same class.
+- Explain why two similar objects are not automatically equal.
+
+---
+
+## Section 2: Properties, Methods, Constructor, and `this`
+
+### 1. Learning goal
+
+Distinguish properties from methods, explain constructors, and use `this` correctly inside a class.
+
+### 2. Simple explanation
+
+A property is data stored on an object.
+
+A method is a function stored on an object.
+
+A constructor is a special method that runs when you create an object with `new`.
+
+`this` means "the current object."
+
+### 3. Code example
+
+```ts
+class BankAccount {
+  owner: string;
+  balance: number;
+
+  constructor(owner: string, startingBalance: number) {
+    this.owner = owner;
+    this.balance = startingBalance;
+  }
+
+  deposit(amount: number): void {
+    this.balance += amount;
+  }
+
+  describe(): string {
+    return `${this.owner} has $${this.balance}`;
+  }
+}
+
+const account = new BankAccount("Maya", 100);
+
+account.deposit(50);
+
+console.log(account.owner);
+console.log(account.balance);
+console.log(account.describe());
+```
+
+Expected output:
+
+```txt
+Maya
+150
+Maya has $150
+```
+
+### 4. Raw intuition
+
+Properties are what the object knows.
+
+Methods are what the object can do.
+
+The constructor is the setup step.
+
+`this` points to the object currently doing the work.
+
+### 5. Common mistakes
+
+- Calling a property like a function: `account.balance()`.
+- Reading a method without calling it: `account.describe` instead of `account.describe()`.
+- Forgetting `this.` inside methods.
+- Thinking `this` means the class. It means the current object.
+- Putting all logic in the constructor instead of methods.
+
+### 6. Exercises
+
+1. Create a `TodoItem` class with properties `text` and `isDone`.
+2. Add a constructor that sets `text` and starts `isDone` as `false`.
+3. Add a method `complete()` that changes `isDone` to `true`.
+4. Add a method `summary()` that returns `"DONE: task"` or `"TODO: task"`.
+5. Predict the output before running your code.
+
+Refactor bad code:
+
+```ts
+class Player {
+  name: string;
+  score: number;
+
+  constructor(name: string) {
+    name = name;
+    score = 0;
+  }
+
+  addPoint(): void {
+    score += 1;
+  }
+}
+```
+
+Fix the code using `this`.
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What is a property?
+2. What is a method?
+3. When does a constructor run?
+4. What does `this.balance += amount` mean?
+5. Predict the output:
+
+```ts
+class Counter {
+  count: number;
+
+  constructor() {
+    this.count = 0;
+  }
+
+  increment(): void {
+    this.count += 1;
+  }
+}
+
+const c = new Counter();
+c.increment();
+c.increment();
+console.log(c.count);
+```
+
+### Answer key
+
+1. A property is data stored on an object.
+2. A method is a function that belongs to an object/class.
+3. A constructor runs when an object is created with `new`.
+4. It adds `amount` to the `balance` property of the current object.
+5. Output:
+
+```txt
+2
+```
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Point to properties and methods in a class.
+- Explain `this` as "the current object."
+- Build a class with a constructor and at least two methods.
+
+---
+
+## Section 3: Public, Private, and Protected
+
+### 1. Learning goal
+
+Use `public`, `private`, and `protected` to control access to class members.
+
+### 2. Simple explanation
+
+Access modifiers control where a property or method can be used.
+
+- `public`: usable from anywhere. This is the default.
+- `private`: usable only inside the same class.
+- `protected`: usable inside the same class and subclasses.
+
+TypeScript's `private` is checked by TypeScript. JavaScript also has runtime private fields using `#field`, but this course focuses on TypeScript's `private`.
+
+### 3. Code example
+
+```ts
+class UserAccount {
+  public username: string;
+  private password: string;
+  protected loginAttempts: number;
+
+  constructor(username: string, password: string) {
+    this.username = username;
+    this.password = password;
+    this.loginAttempts = 0;
+  }
+
+  public checkPassword(input: string): boolean {
+    this.loginAttempts += 1;
+    return input === this.password;
+  }
+}
+
+const account = new UserAccount("dev_maya", "secret");
+
+console.log(account.username);
+console.log(account.checkPassword("wrong"));
+console.log(account.checkPassword("secret"));
+
+// Not allowed:
+// console.log(account.password);
+// console.log(account.loginAttempts);
+```
+
+Expected output:
+
+```txt
+dev_maya
+false
+true
+```
+
+### 4. Raw intuition
+
+`public` is the front door.
+
+`private` is the locked drawer only the class can open.
+
+`protected` is a family-only drawer: the class and its subclasses can use it.
+
+### 5. Common mistakes
+
+- Making everything public because it is convenient.
+- Making everything private and blocking useful extension.
+- Thinking `private` means encrypted or secure. It is mainly a coding boundary.
+- Confusing `private` with "cannot be changed." Private means "cannot be accessed directly from outside."
+- Using `protected` before understanding why subclasses need it.
+
+### 6. Exercises
+
+1. Create a `Wallet` class.
+2. Make `owner` public.
+3. Make `balance` private.
+4. Add `deposit(amount)` and `spend(amount)` methods.
+5. Prevent spending more than the current balance.
+6. Add `getBalance()` so outside code can read the balance safely.
+
+Refactor bad code:
+
+```ts
+class Wallet {
+  owner: string;
+  balance: number;
+
+  constructor(owner: string, balance: number) {
+    this.owner = owner;
+    this.balance = balance;
+  }
+}
+
+const wallet = new Wallet("Leo", 100);
+wallet.balance = -999;
+```
+
+Refactor so outside code cannot directly set `balance`.
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What does `public` mean?
+2. What does `private` mean?
+3. What does `protected` mean?
+4. Which access modifier would you use for a password field?
+5. Why should a bank account balance usually be private?
+6. Predict which lines are allowed:
+
+```ts
+class Base {
+  public a = 1;
+  private b = 2;
+  protected c = 3;
+}
+
+class Child extends Base {
+  show(): void {
+    console.log(this.a);
+    console.log(this.b);
+    console.log(this.c);
+  }
+}
+
+const obj = new Child();
+console.log(obj.a);
+console.log(obj.b);
+console.log(obj.c);
+```
+
+### Answer key
+
+1. `public` means the member can be accessed from anywhere.
+2. `private` means the member can be accessed only inside the class that declares it.
+3. `protected` means the member can be accessed inside the declaring class and subclasses.
+4. Usually `private`.
+5. Because outside code should not freely put the object into an invalid state, such as a negative balance.
+6. Allowed:
+
+```ts
+console.log(this.a);
+console.log(this.c);
+console.log(obj.a);
+```
+
+Not allowed:
+
+```ts
+console.log(this.b);
+console.log(obj.b);
+console.log(obj.c);
+```
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Decide which members should be public or private.
+- Explain why private state is still accessible indirectly through public methods.
+- Explain the difference between private and protected.
+
+---
+
+## Cumulative Review 1: Sections 1-3
+
+Take this without notes.
+
+### Test
+
+1. Define class, object, and instance.
+2. In this code, label each member as property, method, or constructor:
+
+```ts
+class Timer {
+  seconds: number;
+
+  constructor() {
+    this.seconds = 0;
+  }
+
+  tick(): void {
+    this.seconds += 1;
+  }
+}
+```
+
+3. Fix the bug:
+
+```ts
+class Lamp {
+  isOn: boolean;
+
+  constructor() {
+    isOn = false;
+  }
+
+  turnOn(): void {
+    isOn = true;
+  }
+}
+```
+
+4. Why might this be bad?
+
+```ts
+class Score {
+  value: number = 0;
+}
+
+const score = new Score();
+score.value = -100;
+```
+
+5. Predict the output:
+
+```ts
+class Box {
+  private label: string;
+
+  constructor(label: string) {
+    this.label = label;
+  }
+
+  readLabel(): string {
+    return this.label;
+  }
+}
+
+const box = new Box("tools");
+console.log(box.readLabel());
+```
+
+### Answer key
+
+1. A class is a blueprint; an object is a concrete value; an instance is an object created from a specific class.
+2. `seconds` is a property, `constructor` is the constructor, `tick` is a method.
+3. Fixed:
+
+```ts
+class Lamp {
+  isOn: boolean;
+
+  constructor() {
+    this.isOn = false;
+  }
+
+  turnOn(): void {
+    this.isOn = true;
+  }
+}
+```
+
+4. Outside code can put the object into an invalid state. `value` should probably be private with controlled methods.
+5. Output:
+
+```txt
+tools
+```
+
+---
+
+## Section 4: Static Properties and Methods
+
+### 1. Learning goal
+
+Explain the difference between instance members and static members.
+
+### 2. Simple explanation
+
+Instance members belong to each object.
+
+Static members belong to the class itself.
+
+Use `static` for data or behavior that is related to the class, but not to one specific object.
+
+### 3. Code example
+
+```ts
+class MathHelper {
+  static pi = 3.14159;
+
+  static double(value: number): number {
+    return value * 2;
+  }
+}
+
+console.log(MathHelper.pi);
+console.log(MathHelper.double(10));
+
+class Employee {
+  static companyName = "Acme Corp";
+
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  describe(): string {
+    return `${this.name} works at ${Employee.companyName}`;
+  }
+}
+
+const employee = new Employee("Nina");
+console.log(employee.describe());
+```
+
+Expected output:
+
+```txt
+3.14159
+20
+Nina works at Acme Corp
+```
+
+### 4. Raw intuition
+
+Instance property: "this specific employee's name."
+
+Static property: "the company name shared by the class."
+
+You call static members on the class:
+
+```ts
+MathHelper.double(10);
+```
+
+You call instance members on an object:
+
+```ts
+employee.describe();
+```
+
+### 5. Common mistakes
+
+- Trying to call a static method on an object.
+- Trying to use `this.name` inside a static method when `name` belongs to instances.
+- Using static as a global dumping ground.
+- Making something static just to avoid creating objects.
+
+### 6. Exercises
+
+1. Create a `Temperature` class.
+2. Add a static method `celsiusToFahrenheit(celsius: number): number`.
+3. Add a static method `fahrenheitToCelsius(fahrenheit: number): number`.
+4. Call both methods without creating a `Temperature` object.
+5. Explain why these methods are good candidates for `static`.
+
+Faded example:
+
+```ts
+class IdGenerator {
+  private static nextId = 1;
+
+  static createId(): number {
+    const id = /* use nextId */;
+    /* increase nextId */;
+    return id;
+  }
+}
+
+console.log(IdGenerator.createId());
+console.log(IdGenerator.createId());
+```
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What does `static` mean?
+2. Do static members belong to an object or the class?
+3. Do instance members belong to an object or the class?
+4. Predict the output:
+
+```ts
+class Ticket {
+  private static nextNumber = 1;
+  number: number;
+
+  constructor() {
+    this.number = Ticket.nextNumber;
+    Ticket.nextNumber += 1;
+  }
+}
+
+const a = new Ticket();
+const b = new Ticket();
+
+console.log(a.number);
+console.log(b.number);
+```
+
+5. Is this allowed?
+
+```ts
+class Tool {
+  static label = "Hammer";
+}
+
+const tool = new Tool();
+console.log(tool.label);
+```
+
+### Answer key
+
+1. `static` means the member belongs to the class itself.
+2. The class.
+3. The object/instance.
+4. Output:
+
+```txt
+1
+2
+```
+
+5. No. `label` is static, so use `Tool.label`.
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Explain class-level vs object-level data.
+- Call static methods correctly.
+- Avoid using static to escape basic object design.
+
+---
+
+## Section 5: Inheritance With `extends` and `super`
+
+### 1. Learning goal
+
+Use inheritance to create a subclass from a parent class and call the parent constructor with `super`.
+
+### 2. Simple explanation
+
+Inheritance lets one class reuse and specialize another class.
+
+The parent class is also called a base class or superclass.
+
+The child class is also called a subclass or derived class.
+
+`extends` means "this class is based on that class."
+
+`super(...)` calls the parent constructor.
+
+### 3. Code example
+
+```ts
+class Animal {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  eat(): void {
+    console.log(`${this.name} eats`);
+  }
+}
+
+class Dog extends Animal {
+  breed: string;
+
+  constructor(name: string, breed: string) {
+    super(name);
+    this.breed = breed;
+  }
+
+  bark(): void {
+    console.log(`${this.name} barks`);
+  }
+}
+
+const dog = new Dog("Rex", "Labrador");
+
+dog.eat();
+dog.bark();
+console.log(dog.breed);
+```
+
+Expected output:
+
+```txt
+Rex eats
+Rex barks
+Labrador
+```
+
+### 4. Raw intuition
+
+Inheritance says: "A dog is a kind of animal."
+
+The child gets parent behavior, then adds or changes behavior.
+
+`super(name)` is the child saying: "Parent, please initialize your part of this object."
+
+### 5. Common mistakes
+
+- Using inheritance for "has a" relationships. A car has an engine; a car is not an engine.
+- Forgetting to call `super(...)` before using `this` in a subclass constructor.
+- Creating deep inheritance chains too early.
+- Thinking inheritance copies code. It creates a relationship between classes.
+- Confusing subclassing with subscribing. They are unrelated.
+
+### 6. Exercises
+
+1. Create a `Vehicle` class with `brand` and `move()`.
+2. Create a `Car` class that extends `Vehicle`.
+3. Add `doors` to `Car`.
+4. Use `super(brand)` inside the `Car` constructor.
+5. Create a car and call both `move()` and a car-specific method.
+
+Refactor bad relationship:
+
+```ts
+class Engine {
+  start(): void {
+    console.log("Engine starts");
+  }
+}
+
+class Car extends Engine {
+  drive(): void {
+    this.start();
+    console.log("Car drives");
+  }
+}
+```
+
+Explain why this relationship is suspicious. You will refactor it later with composition.
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What does `extends` mean?
+2. What does `super(...)` do?
+3. In `class Dog extends Animal`, which class is the parent?
+4. Which phrase usually suggests inheritance: "is a" or "has a"?
+5. Predict the output:
+
+```ts
+class Person {
+  constructor(public name: string) {}
+
+  introduce(): void {
+    console.log(`I am ${this.name}`);
+  }
+}
+
+class Student extends Person {
+  constructor(name: string, public course: string) {
+    super(name);
+  }
+}
+
+const student = new Student("Ivy", "TypeScript");
+student.introduce();
+console.log(student.course);
+```
+
+### Answer key
+
+1. `extends` creates a subclass based on a parent class.
+2. `super(...)` calls the parent class constructor.
+3. `Animal`.
+4. "is a."
+5. Output:
+
+```txt
+I am Ivy
+TypeScript
+```
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Build a subclass.
+- Use `super(...)` correctly.
+- Explain when inheritance may be the wrong relationship.
+
+---
+
+## Section 6: Method Overriding
+
+### 1. Learning goal
+
+Override a parent method in a subclass and explain how TypeScript chooses which method runs.
+
+### 2. Simple explanation
+
+Method overriding happens when a subclass defines a method with the same name as a parent method.
+
+When you call that method on a subclass object, the subclass version runs.
+
+TypeScript has an `override` keyword. Use it when you intentionally override a parent method.
+
+### 3. Code example
+
+```ts
+class Animal {
+  constructor(public name: string) {}
+
+  speak(): void {
+    console.log(`${this.name} makes a sound`);
+  }
+}
+
+class Dog extends Animal {
+  override speak(): void {
+    console.log(`${this.name} says woof`);
+  }
+}
+
+class Cat extends Animal {
+  override speak(): void {
+    console.log(`${this.name} says meow`);
+  }
+}
+
+const animal = new Animal("Creature");
+const dog = new Dog("Rex");
+const cat = new Cat("Milo");
+
+animal.speak();
+dog.speak();
+cat.speak();
+```
+
+Expected output:
+
+```txt
+Creature makes a sound
+Rex says woof
+Milo says meow
+```
+
+### 4. Raw intuition
+
+The parent gives a default behavior.
+
+The child says: "For me, do it this way instead."
+
+The method name is the same, but the actual object's class decides which implementation runs.
+
+### 5. Common mistakes
+
+- Calling every subclass method "overriding." It is only overriding if the parent already has that method.
+- Changing the method signature in a way that breaks substitutability.
+- Forgetting `override`, making accidental typos harder to catch.
+- Confusing overriding with overloading. They are different.
+- Thinking overriding changes the parent class. It only changes subclass behavior.
+
+### 6. Exercises
+
+1. Create a `Notification` class with `send()`.
+2. Create `EmailNotification` and `SmsNotification` subclasses.
+3. Override `send()` in each subclass.
+4. Use the `override` keyword.
+5. Create one instance of each and predict the output.
+
+Fix the bug:
+
+```ts
+class Report {
+  print(): void {
+    console.log("Printing report");
+  }
+}
+
+class PdfReport extends Report {
+  override pritn(): void {
+    console.log("Printing PDF");
+  }
+}
+```
+
+Explain why `override` helps here.
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What is method overriding?
+2. Does overriding modify the parent class?
+3. Why is the `override` keyword useful?
+4. Predict the output:
+
+```ts
+class Shape {
+  draw(): void {
+    console.log("Drawing shape");
+  }
+}
+
+class Circle extends Shape {
+  override draw(): void {
+    console.log("Drawing circle");
+  }
+}
+
+const shape = new Shape();
+const circle = new Circle();
+
+shape.draw();
+circle.draw();
+```
+
+5. Is this overriding?
+
+```ts
+class A {
+  save(): void {}
+}
+
+class B extends A {
+  load(): void {}
+}
+```
+
+### Answer key
+
+1. A subclass defines a method with the same name/signature as a parent method to replace behavior for subclass objects.
+2. No.
+3. It tells TypeScript you intended to override, so TypeScript can catch typos or missing parent methods.
+4. Output:
+
+```txt
+Drawing shape
+Drawing circle
+```
+
+5. No. `load` does not exist in the parent class.
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Identify overriding in code.
+- Use `override` correctly.
+- Predict which method runs.
+
+---
+
+## Cumulative Review 2: Sections 1-6
+
+Take this without notes.
+
+### Test
+
+1. Explain the difference between property and method.
+2. Explain `public`, `private`, and `protected`.
+3. Explain static vs instance member.
+4. Explain `extends`, `super`, and overriding.
+5. Predict the output:
+
+```ts
+class Device {
+  static count = 0;
+
+  constructor(public name: string) {
+    Device.count += 1;
+  }
+
+  turnOn(): void {
+    console.log(`${this.name} on`);
+  }
+}
+
+class Phone extends Device {
+  constructor(name: string, public number: string) {
+    super(name);
+  }
+
+  override turnOn(): void {
+    console.log(`${this.name} phone on`);
+  }
+}
+
+const a = new Device("Lamp");
+const b = new Phone("Pixel", "123");
+
+a.turnOn();
+b.turnOn();
+console.log(Device.count);
+```
+
+6. Fix the access problem:
+
+```ts
+class Account {
+  private balance = 0;
+}
+
+const account = new Account();
+account.balance += 100;
+```
+
+### Answer key
+
+1. A property stores data; a method is behavior/function.
+2. `public` is accessible anywhere; `private` only inside the declaring class; `protected` inside the declaring class and subclasses.
+3. Static belongs to the class; instance belongs to each object.
+4. `extends` creates a subclass; `super` calls the parent constructor or method; overriding replaces parent behavior in a subclass.
+5. Output:
+
+```txt
+Lamp on
+Pixel phone on
+2
+```
+
+6. Add a public method:
+
+```ts
+class Account {
+  private balance = 0;
+
+  deposit(amount: number): void {
+    this.balance += amount;
+  }
+
+  getBalance(): number {
+    return this.balance;
+  }
+}
+
+const account = new Account();
+account.deposit(100);
+```
+
+---
+
+## Section 7: Abstract Classes
+
+### 1. Learning goal
+
+Use abstract classes to define shared code plus required methods for subclasses.
+
+### 2. Simple explanation
+
+An abstract class is a class you cannot instantiate directly.
+
+It can contain:
+
+- Normal properties
+- Normal methods with implementation
+- Abstract methods with no implementation
+
+Subclasses must implement abstract methods.
+
+### 3. Code example
+
+```ts
+abstract class PaymentMethod {
+  constructor(protected amount: number) {}
+
+  printReceipt(): void {
+    console.log(`Paid $${this.amount}`);
+  }
+
+  abstract pay(): void;
+}
+
+class CreditCardPayment extends PaymentMethod {
+  constructor(amount: number, private cardLast4: string) {
+    super(amount);
+  }
+
+  override pay(): void {
+    console.log(`Charging card ending in ${this.cardLast4}`);
+  }
+}
+
+const payment = new CreditCardPayment(50, "4242");
+
+payment.pay();
+payment.printReceipt();
+
+// Not allowed:
+// const basePayment = new PaymentMethod(50);
+```
+
+Expected output:
+
+```txt
+Charging card ending in 4242
+Paid $50
+```
+
+### 4. Raw intuition
+
+An abstract class says:
+
+"Every subclass is this kind of thing, and I can share some real code, but each subclass must fill in specific blanks."
+
+It is a partial blueprint.
+
+### 5. Common mistakes
+
+- Trying to instantiate an abstract class.
+- Creating an abstract class with no shared code when an interface would be enough.
+- Forgetting to implement abstract methods in subclasses.
+- Making too many abstract methods too early.
+- Using abstract classes to force a hierarchy that does not really exist.
+
+### 6. Exercises
+
+1. Create an abstract class `Exporter`.
+2. Give it a concrete method `logStart()` that prints `"Starting export"`.
+3. Give it an abstract method `export(data: string): string`.
+4. Create `JsonExporter` and `CsvExporter`.
+5. Implement `export` differently in each subclass.
+
+Faded example:
+
+```ts
+abstract class Formatter {
+  constructor(protected text: string) {}
+
+  abstract format(): string;
+
+  preview(): void {
+    console.log(this.format());
+  }
+}
+
+class UpperCaseFormatter extends Formatter {
+  // implement format
+}
+```
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. Can you create an object directly from an abstract class?
+2. What must a subclass do with abstract methods?
+3. What can an abstract class contain that an interface cannot contain in the same way?
+4. Predict the output:
+
+```ts
+abstract class Worker {
+  constructor(protected name: string) {}
+
+  start(): void {
+    console.log(`${this.name} starts`);
+  }
+
+  abstract work(): void;
+}
+
+class Designer extends Worker {
+  override work(): void {
+    console.log(`${this.name} designs`);
+  }
+}
+
+const worker = new Designer("Ari");
+worker.start();
+worker.work();
+```
+
+### Answer key
+
+1. No.
+2. It must implement them unless the subclass is also abstract.
+3. Shared implemented behavior and initialized state.
+4. Output:
+
+```txt
+Ari starts
+Ari designs
+```
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Explain why abstract classes cannot be instantiated.
+- Implement an abstract method in a subclass.
+- Decide when shared implementation makes abstract class useful.
+
+---
+
+## Section 8: Interfaces
+
+### 1. Learning goal
+
+Use interfaces to describe the shape/capabilities an object must have.
+
+### 2. Simple explanation
+
+An interface describes a contract.
+
+It says: "Anything used as this type must have these properties and methods."
+
+Interfaces do not create objects. They describe the shape of objects.
+
+### 3. Code example
+
+```ts
+interface Logger {
+  log(message: string): void;
+}
+
+class ConsoleLogger implements Logger {
+  log(message: string): void {
+    console.log(`[LOG] ${message}`);
+  }
+}
+
+function runJob(logger: Logger): void {
+  logger.log("Job started");
+  logger.log("Job finished");
+}
+
+const logger = new ConsoleLogger();
+runJob(logger);
+```
+
+Expected output:
+
+```txt
+[LOG] Job started
+[LOG] Job finished
+```
+
+### 4. Raw intuition
+
+An interface is like a job requirement:
+
+"I do not care exactly who you are. If you can `log(message)`, I can work with you."
+
+It focuses on capability, not ancestry.
+
+### 5. Common mistakes
+
+- Thinking an interface becomes JavaScript at runtime. Interfaces disappear after TypeScript compiles.
+- Trying to put real implementation in an interface.
+- Thinking a class must explicitly say `implements` to match an interface. TypeScript is structural, so matching shape often works.
+- Creating huge interfaces with too many responsibilities.
+- Naming interfaces after technical details instead of capabilities.
+
+### 6. Exercises
+
+1. Create an interface `EmailSender` with `sendEmail(to: string, body: string): void`.
+2. Create a class `SmtpEmailSender` with that method.
+3. Write a function `notifyUser(sender: EmailSender)`.
+4. Pass `SmtpEmailSender` into the function.
+5. Create a plain object that also satisfies `EmailSender`.
+
+Refactor bad code:
+
+```ts
+function saveReport(consoleLogger: ConsoleLogger): void {
+  consoleLogger.log("Saving report");
+}
+```
+
+Refactor the function so it depends on a `Logger` interface instead of one concrete class.
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What is an interface?
+2. Does an interface create an object?
+3. Does an interface exist at runtime in JavaScript?
+4. What is wrong here?
+
+```ts
+interface Printer {
+  print(): void {
+    console.log("printing");
+  }
+}
+```
+
+5. Will this work?
+
+```ts
+interface HasName {
+  name: string;
+}
+
+const user = { name: "Jo", age: 30 };
+
+function greet(value: HasName): void {
+  console.log(value.name);
+}
+
+greet(user);
+```
+
+### Answer key
+
+1. An interface is a TypeScript contract describing required properties and methods.
+2. No.
+3. No. It is erased during compilation.
+4. Interfaces cannot contain method implementations like that.
+5. Yes. `user` has at least the required `name` property.
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Write an interface with properties and methods.
+- Use an interface as a function parameter type.
+- Explain why interfaces describe capability rather than implementation.
+
+---
+
+## Section 9: `implements`
+
+### 1. Learning goal
+
+Use `implements` to make a class explicitly satisfy an interface.
+
+### 2. Simple explanation
+
+`implements` means a class promises to match an interface.
+
+TypeScript checks that the class has all required properties and methods.
+
+Unlike `extends`, `implements` does not inherit code.
+
+### 3. Code example
+
+```ts
+interface Payable {
+  calculatePay(): number;
+}
+
+class Contractor implements Payable {
+  constructor(private hourlyRate: number, private hoursWorked: number) {}
+
+  calculatePay(): number {
+    return this.hourlyRate * this.hoursWorked;
+  }
+}
+
+class SalariedEmployee implements Payable {
+  constructor(private monthlySalary: number) {}
+
+  calculatePay(): number {
+    return this.monthlySalary;
+  }
+}
+
+const contractor = new Contractor(80, 20);
+const employee = new SalariedEmployee(5000);
+
+console.log(contractor.calculatePay());
+console.log(employee.calculatePay());
+```
+
+Expected output:
+
+```txt
+1600
+5000
+```
+
+### 4. Raw intuition
+
+`implements Payable` says:
+
+"You can trust me to have the behavior required by `Payable`."
+
+It is a promise checked by TypeScript.
+
+### 5. Common mistakes
+
+- Thinking `implements` gives the class method bodies. It does not.
+- Confusing `implements` with `extends`.
+- Forgetting that one class can implement multiple interfaces.
+- Using `implements` when you actually need shared code from a parent class.
+- Creating interfaces that mirror one class exactly for no reason.
+
+### 6. Exercises
+
+1. Create an interface `Renderable` with `render(): string`.
+2. Create classes `Button`, `ImageView`, and `TextBlock` that implement it.
+3. Put all three in a `Renderable[]`.
+4. Loop over them and call `render()`.
+5. Explain why `implements` is useful here.
+
+Fix the bug:
+
+```ts
+interface Saveable {
+  save(): void;
+}
+
+class Draft implements Saveable {
+  title: string = "Untitled";
+}
+```
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What does `implements` mean?
+2. Does `implements` inherit code?
+3. Can a class implement more than one interface?
+4. Predict the TypeScript result:
+
+```ts
+interface Drivable {
+  drive(): void;
+}
+
+class Bicycle implements Drivable {
+  pedal(): void {
+    console.log("pedaling");
+  }
+}
+```
+
+5. What is the difference between these?
+
+```ts
+class Dog extends Animal {}
+class Dog implements AnimalLike {}
+```
+
+### Answer key
+
+1. It means a class explicitly promises to satisfy an interface.
+2. No.
+3. Yes.
+4. TypeScript error. `Bicycle` does not implement required method `drive`.
+5. `extends` inherits from a class. `implements` checks that a class matches an interface.
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Use `implements` correctly.
+- Explain why it is different from `extends`.
+- Fix a class that fails to satisfy an interface.
+
+---
+
+## Section 10: Interface vs Abstract Class
+
+### 1. Learning goal
+
+Choose between an interface and an abstract class for common TypeScript designs.
+
+### 2. Simple explanation
+
+Use an interface when you want to describe a capability or shape.
+
+Use an abstract class when you need shared implemented behavior or shared protected state.
+
+Interface:
+
+- Contract only
+- No runtime output
+- A class can implement many interfaces
+- Great for capabilities
+
+Abstract class:
+
+- Can contain real code
+- Exists at runtime as JavaScript class
+- A class can extend only one class
+- Great for shared base behavior
+
+### 3. Code example
+
+```ts
+interface Notifier {
+  send(message: string): void;
+}
+
+abstract class BaseNotifier implements Notifier {
+  constructor(protected recipient: string) {}
+
+  protected format(message: string): string {
+    return `[To ${this.recipient}] ${message}`;
+  }
+
+  abstract send(message: string): void;
+}
+
+class EmailNotifier extends BaseNotifier {
+  override send(message: string): void {
+    console.log(`EMAIL ${this.format(message)}`);
+  }
+}
+
+class SmsNotifier extends BaseNotifier {
+  override send(message: string): void {
+    console.log(`SMS ${this.format(message)}`);
+  }
+}
+
+function alertUser(notifier: Notifier): void {
+  notifier.send("Your build finished");
+}
+
+alertUser(new EmailNotifier("maya@example.com"));
+alertUser(new SmsNotifier("+123"));
+```
+
+Expected output:
+
+```txt
+EMAIL [To maya@example.com] Your build finished
+SMS [To +123] Your build finished
+```
+
+### 4. Raw intuition
+
+Interface: "Can you do this?"
+
+Abstract class: "You are this kind of thing, and I have some shared machinery for you."
+
+If you only need a promise, reach for an interface.
+
+If you need shared code, consider an abstract class.
+
+### 5. Common mistakes
+
+- Making an abstract class just because it sounds more serious.
+- Using an interface when every implementation repeats the same code.
+- Forgetting a class can extend only one class.
+- Forgetting a class can implement multiple interfaces.
+- Creating a base class too early before duplication is real.
+
+### 6. Exercises
+
+For each case, choose interface or abstract class and explain why:
+
+1. A `Serializable` type with `serialize(): string`.
+2. A `BaseApiClient` with shared `baseUrl`, `getHeaders()`, and abstract `request()`.
+3. A `Clickable` type with `click(): void`.
+4. A `BaseEntity` with shared `id`, `createdAt`, and `touch()`.
+5. A `Cache` capability with `get`, `set`, and `delete`.
+
+Refactor exercise:
+
+```ts
+abstract class CanPrint {
+  abstract print(): void;
+}
+
+class Receipt extends CanPrint {
+  print(): void {
+    console.log("Receipt");
+  }
+}
+```
+
+If there is no shared code, refactor to an interface.
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. When should you prefer an interface?
+2. When should you prefer an abstract class?
+3. Can a class extend multiple abstract classes?
+4. Can a class implement multiple interfaces?
+5. Choose one:
+
+```ts
+// Need type for anything that has validate(): boolean.
+// No shared implementation needed.
+```
+
+Interface or abstract class?
+
+6. Choose one:
+
+```ts
+// Need base class with shared retry logic and abstract send().
+```
+
+Interface or abstract class?
+
+### Answer key
+
+1. Prefer an interface for a contract/capability/shape without shared implementation.
+2. Prefer an abstract class when subclasses need shared code or shared protected state.
+3. No.
+4. Yes.
+5. Interface.
+6. Abstract class.
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Explain the choice without using vague words like "better."
+- Identify shared implementation as the main reason for abstract classes.
+- Identify capability contracts as the main reason for interfaces.
+
+---
+
+## Cumulative Review 3: Sections 1-10
+
+Take this without notes.
+
+### Test
+
+1. Explain the difference between `extends` and `implements`.
+2. Explain the difference between interface and abstract class.
+3. What is wrong?
+
+```ts
+abstract class BaseTask {
+  abstract run(): void;
+}
+
+const task = new BaseTask();
+```
+
+4. What is wrong?
+
+```ts
+interface Runner {
+  run(): void {
+    console.log("run");
+  }
+}
+```
+
+5. Predict the output:
+
+```ts
+interface Speaker {
+  speak(): void;
+}
+
+abstract class Animal implements Speaker {
+  constructor(protected name: string) {}
+
+  abstract speak(): void;
+
+  sleep(): void {
+    console.log(`${this.name} sleeps`);
+  }
+}
+
+class Dog extends Animal {
+  override speak(): void {
+    console.log(`${this.name} woof`);
+  }
+}
+
+const speaker: Speaker = new Dog("Rex");
+speaker.speak();
+```
+
+6. Is this allowed?
+
+```ts
+speaker.sleep();
+```
+
+Use the `speaker` variable from question 5.
+
+### Answer key
+
+1. `extends` creates inheritance from a class and reuses behavior. `implements` checks that a class satisfies an interface and gives no code.
+2. Interface is a contract/shape and disappears at runtime. Abstract class can hold shared implementation/state and exists as a class at runtime.
+3. You cannot instantiate an abstract class.
+4. Interfaces cannot contain method bodies.
+5. Output:
+
+```txt
+Rex woof
+```
+
+6. No. The variable type is `Speaker`, and `Speaker` only promises `speak()`. The object has `sleep()`, but the variable type does not expose it.
+
+---
+
+## Section 11: Polymorphism
+
+### 1. Learning goal
+
+Use one common type to work with many different concrete object types.
+
+### 2. Simple explanation
+
+Polymorphism means "many forms."
+
+In OOP, it means code can use a common type while different objects provide different behavior.
+
+The caller does not need to know the exact class. It only needs the shared interface or base class.
+
+### 3. Code example
+
+```ts
+interface Shape {
+  area(): number;
+}
+
+class Rectangle implements Shape {
+  constructor(private width: number, private height: number) {}
+
+  area(): number {
+    return this.width * this.height;
+  }
+}
+
+class Circle implements Shape {
+  constructor(private radius: number) {}
+
+  area(): number {
+    return Math.PI * this.radius * this.radius;
+  }
+}
+
+function printAreas(shapes: Shape[]): void {
+  for (const shape of shapes) {
+    console.log(shape.area());
+  }
+}
+
+const shapes: Shape[] = [
+  new Rectangle(4, 5),
+  new Circle(3),
+];
+
+printAreas(shapes);
+```
+
+Possible output:
+
+```txt
+20
+28.274333882308138
+```
+
+### 4. Raw intuition
+
+The function says:
+
+"I do not care whether you are a rectangle or circle. If you can give me an area, I can use you."
+
+Same message, different object-specific behavior.
+
+### 5. Common mistakes
+
+- Thinking polymorphism only means inheritance. Interfaces also enable polymorphism.
+- Using `if`/`switch` on type names instead of letting objects do their own work.
+- Making the common type too large.
+- Thinking polymorphism means "anything can be anything." It means different things share a reliable contract.
+- Forgetting that variable type controls what methods TypeScript lets you call.
+
+### 6. Exercises
+
+1. Create an interface `DiscountPolicy` with `calculate(total: number): number`.
+2. Create `NoDiscount`, `PercentageDiscount`, and `FixedDiscount`.
+3. Write `checkout(total: number, discount: DiscountPolicy): number`.
+4. Call `checkout` with all three discount objects.
+5. Explain how this avoids `if` statements in `checkout`.
+
+Refactor bad code:
+
+```ts
+function calculateArea(shape: any): number {
+  if (shape.type === "rectangle") {
+    return shape.width * shape.height;
+  }
+
+  if (shape.type === "circle") {
+    return Math.PI * shape.radius * shape.radius;
+  }
+
+  return 0;
+}
+```
+
+Refactor using polymorphism.
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What is polymorphism?
+2. Does polymorphism require inheritance?
+3. Why is this function polymorphic?
+
+```ts
+function sendAll(notifiers: Notifier[]): void {
+  for (const notifier of notifiers) {
+    notifier.send("Hello");
+  }
+}
+```
+
+4. Predict the output:
+
+```ts
+interface Greeter {
+  greet(): void;
+}
+
+class FriendlyGreeter implements Greeter {
+  greet(): void {
+    console.log("Hi!");
+  }
+}
+
+class FormalGreeter implements Greeter {
+  greet(): void {
+    console.log("Good morning.");
+  }
+}
+
+const greeters: Greeter[] = [
+  new FriendlyGreeter(),
+  new FormalGreeter(),
+];
+
+for (const greeter of greeters) {
+  greeter.greet();
+}
+```
+
+### Answer key
+
+1. Polymorphism is using one common type while different concrete objects provide different behavior.
+2. No. Interfaces can enable it too.
+3. It accepts `Notifier[]`, so many different notifier implementations can be used through the same contract.
+4. Output:
+
+```txt
+Hi!
+Good morning.
+```
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Write a function that accepts an interface.
+- Pass multiple classes into that function.
+- Explain why the function does not need to know each concrete class.
+
+---
+
+## Section 12: Composition vs Inheritance
+
+### 1. Learning goal
+
+Choose between inheritance and composition using "is a" and "has a" relationships.
+
+### 2. Simple explanation
+
+Inheritance models "is a."
+
+Composition models "has a" or "uses a."
+
+Composition means building an object by giving it other objects to use.
+
+Inheritance:
+
+```txt
+Dog is an Animal.
+```
+
+Composition:
+
+```txt
+Car has an Engine.
+Order uses a PaymentProcessor.
+```
+
+### 3. Code example
+
+Bad inheritance:
+
+```ts
+class Engine {
+  start(): void {
+    console.log("Engine starts");
+  }
+}
+
+class Car extends Engine {
+  drive(): void {
+    this.start();
+    console.log("Car drives");
+  }
+}
+```
+
+Better composition:
+
+```ts
+class Engine {
+  start(): void {
+    console.log("Engine starts");
+  }
+}
+
+class Car {
+  constructor(private engine: Engine) {}
+
+  drive(): void {
+    this.engine.start();
+    console.log("Car drives");
+  }
+}
+
+const engine = new Engine();
+const car = new Car(engine);
+
+car.drive();
+```
+
+Expected output:
+
+```txt
+Engine starts
+Car drives
+```
+
+### 4. Raw intuition
+
+Inheritance says:
+
+"I am a specialized version of you."
+
+Composition says:
+
+"I contain or use you to do my job."
+
+Most business code becomes easier to change with composition.
+
+### 5. Common mistakes
+
+- Using inheritance just to reuse code.
+- Creating a subclass for every tiny variation.
+- Confusing "uses a" with "is a."
+- Making composed dependencies concrete when an interface would be more flexible.
+- Thinking composition means no classes. Composition usually uses classes too.
+
+### 6. Exercises
+
+1. Decide inheritance or composition:
+   - `AdminUser` and `User`
+   - `Car` and `Engine`
+   - `Invoice` and `PdfExporter`
+   - `EmailNotification` and `Notification`
+   - `Playlist` and `Song`
+2. Refactor this bad inheritance into composition:
+
+```ts
+class EmailSender {
+  sendEmail(to: string, body: string): void {
+    console.log(`Sending email to ${to}: ${body}`);
+  }
+}
+
+class UserRegistration extends EmailSender {
+  register(email: string): void {
+    console.log("Creating user");
+    this.sendEmail(email, "Welcome");
+  }
+}
+```
+
+3. Create an interface `MessageSender` and make `UserRegistration` depend on that instead of a concrete class.
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What relationship does inheritance model?
+2. What relationship does composition model?
+3. Which is better: `Car extends Engine` or `Car has Engine`?
+4. Why is "reuse code" alone a weak reason for inheritance?
+5. Refactor mentally:
+
+```ts
+class FileLogger {
+  log(message: string): void {
+    console.log(`file: ${message}`);
+  }
+}
+
+class OrderService extends FileLogger {
+  placeOrder(): void {
+    this.log("order placed");
+  }
+}
+```
+
+What should `OrderService` have instead?
+
+### Answer key
+
+1. "is a."
+2. "has a" or "uses a."
+3. `Car has Engine`.
+4. Because inheritance creates a type relationship and can tightly couple classes. Composition can reuse behavior without claiming a false "is a" relationship.
+5. It should have a logger dependency, ideally typed as an interface:
+
+```ts
+interface Logger {
+  log(message: string): void;
+}
+
+class OrderService {
+  constructor(private logger: Logger) {}
+
+  placeOrder(): void {
+    this.logger.log("order placed");
+  }
+}
+```
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Use "is a" vs "has a" to choose a relationship.
+- Refactor false inheritance into composition.
+- Explain why composition is often more flexible.
+
+---
+
+## Section 13: Dependency Injection Basics
+
+### 1. Learning goal
+
+Use constructor dependency injection to give an object its collaborators from the outside.
+
+### 2. Simple explanation
+
+Dependency injection means an object receives the things it needs instead of creating them internally.
+
+A dependency is another object/class/function your class needs to do its job.
+
+Constructor injection is the simplest form:
+
+```ts
+class Service {
+  constructor(private dependency: Dependency) {}
+}
+```
+
+### 3. Code example
+
+Without dependency injection:
+
+```ts
+class ConsoleLogger {
+  log(message: string): void {
+    console.log(message);
+  }
+}
+
+class OrderService {
+  private logger = new ConsoleLogger();
+
+  placeOrder(): void {
+    this.logger.log("Order placed");
+  }
+}
+```
+
+With dependency injection:
+
+```ts
+interface Logger {
+  log(message: string): void;
+}
+
+class ConsoleLogger implements Logger {
+  log(message: string): void {
+    console.log(message);
+  }
+}
+
+class OrderService {
+  constructor(private logger: Logger) {}
+
+  placeOrder(): void {
+    this.logger.log("Order placed");
+  }
+}
+
+const logger = new ConsoleLogger();
+const service = new OrderService(logger);
+
+service.placeOrder();
+```
+
+Expected output:
+
+```txt
+Order placed
+```
+
+### 4. Raw intuition
+
+Without dependency injection:
+
+"I build my own tools."
+
+With dependency injection:
+
+"Someone hands me the tools I need."
+
+That makes the class easier to test and easier to change.
+
+### 5. Common mistakes
+
+- Thinking dependency injection requires a framework.
+- Injecting too many things because the class has too many responsibilities.
+- Depending on concrete classes when an interface would be better.
+- Creating dependencies inside the class and calling it injection.
+- Making everything injectable even when there is no real variation or testing need.
+
+### 6. Exercises
+
+1. Create an interface `PaymentGateway` with `charge(amount: number): boolean`.
+2. Create `StripeGateway` and `FakePaymentGateway`.
+3. Create `CheckoutService` that receives `PaymentGateway` in its constructor.
+4. Use `FakePaymentGateway` in a test-like example.
+5. Explain why this is easier to test than creating `StripeGateway` inside `CheckoutService`.
+
+Refactor bad code:
+
+```ts
+class ReportService {
+  generate(): void {
+    const logger = new ConsoleLogger();
+    logger.log("Generating report");
+  }
+}
+```
+
+Refactor so the logger is injected.
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What is a dependency?
+2. What is dependency injection?
+3. What is constructor injection?
+4. Why does DI help testing?
+5. What is wrong here?
+
+```ts
+class EmailService {
+  private sender = new SmtpSender();
+
+  sendWelcomeEmail(to: string): void {
+    this.sender.send(to, "Welcome");
+  }
+}
+```
+
+### Answer key
+
+1. A dependency is something a class needs to do its job.
+2. Dependency injection means passing dependencies into a class from the outside.
+3. Constructor injection means dependencies are received through the constructor.
+4. You can pass fake/test implementations instead of real external services.
+5. `EmailService` creates its own concrete `SmtpSender`, which makes it harder to replace, test, or configure.
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Inject a dependency through a constructor.
+- Type a dependency as an interface.
+- Explain how DI supports composition and testing.
+
+---
+
+## Section 14: How OOP Connects to Design Patterns
+
+### 1. Learning goal
+
+Explain how OOP fundamentals show up inside common design patterns.
+
+### 2. Simple explanation
+
+Design patterns are reusable solutions to common design problems.
+
+They are not magic. Most are combinations of:
+
+- Interfaces
+- Classes
+- Composition
+- Polymorphism
+- Encapsulation
+- Inheritance or abstract classes when useful
+- Dependency injection
+
+If those basics are weak, patterns feel like memorized diagrams.
+
+### 3. Code example
+
+Strategy pattern using OOP basics:
+
+```ts
+interface PricingStrategy {
+  calculate(basePrice: number): number;
+}
+
+class RegularPricing implements PricingStrategy {
+  calculate(basePrice: number): number {
+    return basePrice;
+  }
+}
+
+class HolidayPricing implements PricingStrategy {
+  calculate(basePrice: number): number {
+    return basePrice * 0.8;
+  }
+}
+
+class Checkout {
+  constructor(private pricingStrategy: PricingStrategy) {}
+
+  total(basePrice: number): number {
+    return this.pricingStrategy.calculate(basePrice);
+  }
+}
+
+const regularCheckout = new Checkout(new RegularPricing());
+const holidayCheckout = new Checkout(new HolidayPricing());
+
+console.log(regularCheckout.total(100));
+console.log(holidayCheckout.total(100));
+```
+
+Expected output:
+
+```txt
+100
+80
+```
+
+### 4. Raw intuition
+
+Many patterns are just disciplined ways to answer:
+
+"What should know this?"
+
+"What should vary?"
+
+"What should stay stable?"
+
+"Should I inherit behavior or inject a collaborator?"
+
+The Strategy pattern is basically polymorphism plus composition.
+
+### 5. Common mistakes
+
+- Memorizing pattern names before understanding the object relationships.
+- Using patterns where simple code is enough.
+- Thinking every pattern needs inheritance.
+- Missing that many patterns depend on interfaces and composition.
+- Treating patterns as rules instead of tradeoffs.
+
+### 6. Exercises
+
+1. In the Strategy example, identify:
+   - Interface
+   - Implementing classes
+   - Composition
+   - Polymorphism
+   - Dependency injection
+2. Refactor this conditional code using Strategy:
+
+```ts
+function shippingCost(type: string, weight: number): number {
+  if (type === "standard") {
+    return weight * 5;
+  }
+
+  if (type === "express") {
+    return weight * 10;
+  }
+
+  return weight * 20;
+}
+```
+
+3. Explain in your own words why Strategy is not "just an interface."
+
+### 7. Mini test
+
+Answer without looking above.
+
+1. What are design patterns built from?
+2. Which OOP ideas appear in Strategy?
+3. Why should you avoid forcing patterns into simple code?
+4. Predict the output:
+
+```ts
+interface Formatter {
+  format(text: string): string;
+}
+
+class UpperFormatter implements Formatter {
+  format(text: string): string {
+    return text.toUpperCase();
+  }
+}
+
+class PrefixFormatter implements Formatter {
+  format(text: string): string {
+    return `LOG: ${text}`;
+  }
+}
+
+class MessagePrinter {
+  constructor(private formatter: Formatter) {}
+
+  print(text: string): void {
+    console.log(this.formatter.format(text));
+  }
+}
+
+new MessagePrinter(new UpperFormatter()).print("hello");
+new MessagePrinter(new PrefixFormatter()).print("hello");
+```
+
+5. In the code above, where is composition?
+
+### Answer key
+
+1. Classes, interfaces, composition, polymorphism, encapsulation, inheritance, abstract classes, and dependency injection.
+2. Interface, implementations, composition, dependency injection, and polymorphism.
+3. Because patterns add structure and indirection. If there is no real variation or design pressure, they can make code harder to read.
+4. Output:
+
+```txt
+HELLO
+LOG: hello
+```
+
+5. `MessagePrinter` has a `Formatter` passed into its constructor and stores it as a dependency.
+
+### 8. Criteria to proceed
+
+Move on when you can:
+
+- Decompose a simple pattern into OOP basics.
+- Explain Strategy using interface, composition, and polymorphism.
+- Notice when a pattern may be unnecessary.
+
+---
+
+## Cumulative Review 4: Sections 1-14
+
+Take this without notes.
+
+### Test
+
+1. Define each term in one sentence:
+   - Class
+   - Object
+   - Property
+   - Method
+   - Constructor
+   - `this`
+   - Static
+   - Interface
+   - Abstract class
+   - Polymorphism
+   - Composition
+   - Dependency injection
+2. Is each relationship inheritance or composition?
+   - `Dog` and `Animal`
+   - `InvoiceService` and `Logger`
+   - `Car` and `Engine`
+   - `CsvExporter` and `Exporter`
+3. Refactor using interface + DI:
+
+```ts
+class SmsSender {
+  send(phone: string, message: string): void {
+    console.log(`${phone}: ${message}`);
+  }
+}
+
+class AlertService {
+  private sender = new SmsSender();
+
+  alert(phone: string): void {
+    this.sender.send(phone, "Warning");
+  }
+}
+```
+
+4. Predict the output:
+
+```ts
+abstract class BaseCommand {
+  private static nextId = 1;
+  protected id: number;
+
+  constructor() {
+    this.id = BaseCommand.nextId;
+    BaseCommand.nextId += 1;
+  }
+
+  describe(): void {
+    console.log(`Command ${this.id}`);
+  }
+
+  abstract execute(): void;
+}
+
+class SaveCommand extends BaseCommand {
+  override execute(): void {
+    console.log(`Save ${this.id}`);
+  }
+}
+
+class DeleteCommand extends BaseCommand {
+  override execute(): void {
+    console.log(`Delete ${this.id}`);
+  }
+}
+
+const commands: BaseCommand[] = [
+  new SaveCommand(),
+  new DeleteCommand(),
+];
+
+for (const command of commands) {
+  command.describe();
+  command.execute();
+}
+```
+
+5. Why is the loop in question 4 polymorphic?
+
+### Answer key
+
+1. Possible answers:
+   - Class: blueprint for objects.
+   - Object: concrete value with data and behavior.
+   - Property: data stored on an object or class.
+   - Method: function belonging to an object or class.
+   - Constructor: setup method called by `new`.
+   - `this`: current object.
+   - Static: member belonging to the class itself.
+   - Interface: TypeScript contract describing shape/capability.
+   - Abstract class: non-instantiable base class with shared code and/or required abstract methods.
+   - Polymorphism: using a common type while concrete objects behave differently.
+   - Composition: building objects from other objects they have/use.
+   - Dependency injection: passing dependencies in from outside.
+2. Answers:
+   - `Dog` and `Animal`: inheritance.
+   - `InvoiceService` and `Logger`: composition.
+   - `Car` and `Engine`: composition.
+   - `CsvExporter` and `Exporter`: likely inheritance if `Exporter` is a meaningful base type.
+3. Refactor:
+
+```ts
+interface MessageSender {
+  send(destination: string, message: string): void;
+}
+
+class SmsSender implements MessageSender {
+  send(phone: string, message: string): void {
+    console.log(`${phone}: ${message}`);
+  }
+}
+
+class AlertService {
+  constructor(private sender: MessageSender) {}
+
+  alert(phone: string): void {
+    this.sender.send(phone, "Warning");
+  }
+}
+```
+
+4. Output:
+
+```txt
+Command 1
+Save 1
+Command 2
+Delete 2
+```
+
+5. The array is typed as `BaseCommand[]`, but it contains different subclasses. The loop calls `execute()` through the base type, and each subclass implementation runs.
+
+---
+
+## Section 15: Final Project and Final Exam
+
+### 1. Learning goal
+
+Build a small TypeScript OOP application that uses every core concept in this course.
+
+### 2. Simple explanation
+
+The final project is a tiny task management system.
+
+It must include:
+
+- Class
+- Object
+- Constructor
+- Properties
+- Methods
+- Interface
+- `implements`
+- Abstract class
+- Inheritance
+- Method overriding
+- Composition
+- Polymorphism
+- `private`, `public`, and `protected`
+- Static property or method
+- Dependency injection
+
+You are not building a full app UI. You are building the domain model and running it from a script.
+
+### 3. Code example
+
+This is a small worked example of the style you will use. Do not copy it as the final project.
+
+```ts
+interface Notifier {
+  send(message: string): void;
+}
+
+class ConsoleNotifier implements Notifier {
+  send(message: string): void {
+    console.log(message);
+  }
+}
+
+abstract class Task {
+  private static nextId = 1;
+  public readonly id: number;
+
+  constructor(public title: string, protected notifier: Notifier) {
+    this.id = Task.nextId;
+    Task.nextId += 1;
+  }
+
+  complete(): void {
+    this.notifier.send(`Completed: ${this.title}`);
+  }
+
+  abstract estimateHours(): number;
+}
+
+class BugFixTask extends Task {
+  constructor(title: string, notifier: Notifier, private severity: "low" | "high") {
+    super(title, notifier);
+  }
+
+  override estimateHours(): number {
+    return this.severity === "high" ? 6 : 2;
+  }
+}
+
+const task = new BugFixTask("Fix login bug", new ConsoleNotifier(), "high");
+
+console.log(task.id);
+console.log(task.estimateHours());
+task.complete();
+```
+
+Expected output:
+
+```txt
+1
+6
+Completed: Fix login bug
+```
+
+### 4. Raw intuition
+
+The project should feel like objects collaborating:
+
+- A task knows its own title and completion rules.
+- A task list manages tasks.
+- A notifier sends messages.
+- Different task types estimate work differently.
+- The app code can treat all task types as `Task`.
+
+You are practicing object boundaries, not just syntax.
+
+### 5. Common mistakes
+
+- Making one giant `TaskManager` that does everything.
+- Using inheritance where composition is better.
+- Creating interfaces that are never used.
+- Making all properties public.
+- Avoiding polymorphism by writing many `if (task.type === "...")` checks.
+- Forgetting to use `override`.
+- Creating dependencies inside classes instead of injecting them.
+
+### 6. Exercises: Final project specification
+
+Build a TypeScript script called `final-project.ts`.
+
+Project name: `TaskFlow Lite`.
+
+Required domain:
+
+1. `Notifier` interface
+   - Method: `send(message: string): void`
+2. `ConsoleNotifier` class
+   - Implements `Notifier`
+   - Prints messages to the console
+3. `TaskStatus` type
+   - Values: `"open" | "in_progress" | "done"`
+4. Abstract class `Task`
+   - Private static `nextId`
+   - Public readonly `id`
+   - Public `title`
+   - Protected `status`
+   - Protected `notifier`
+   - Constructor receives `title` and `notifier`
+   - Public method `start()`
+   - Public method `complete()`
+   - Public method `getStatus()`
+   - Abstract method `estimateHours(): number`
+   - Method `summary()` returning a string
+5. `BugTask` class
+   - Extends `Task`
+   - Private `severity: "low" | "medium" | "high"`
+   - Overrides `estimateHours()`
+   - Overrides `summary()` to include severity
+6. `FeatureTask` class
+   - Extends `Task`
+   - Private `complexity: 1 | 2 | 3`
+   - Overrides `estimateHours()`
+7. `ResearchTask` class
+   - Extends `Task`
+   - Private `topic: string`
+   - Overrides `estimateHours()`
+   - Overrides `summary()` to include topic
+8. `TaskRepository` interface
+   - `add(task: Task): void`
+   - `all(): Task[]`
+   - `findById(id: number): Task | undefined`
+9. `InMemoryTaskRepository` class
+   - Implements `TaskRepository`
+   - Uses a private array of tasks
+10. `TaskService` class
+   - Uses composition
+   - Receives `TaskRepository` and `Notifier` through constructor injection
+   - Has methods:
+     - `createBug(title, severity)`
+     - `createFeature(title, complexity)`
+     - `createResearch(title, topic)`
+     - `startTask(id)`
+     - `completeTask(id)`
+     - `printReport()`
+11. Polymorphism requirement
+   - `printReport()` must loop over `Task[]` and call `summary()` and `estimateHours()` without checking the concrete class.
+12. Demo script
+   - Create a repository.
+   - Create a notifier.
+   - Create a service.
+   - Create at least one bug task, one feature task, and one research task.
+   - Start and complete at least one task.
+   - Print a report.
+
+Suggested output shape:
+
+```txt
+Created task: Fix login
+Created task: Add dashboard
+Created task: Compare vector databases
+Started task: Fix login
+Completed task: Fix login
+
+Task Report
+1. [done] Fix login (bug: high) - 6h
+2. [open] Add dashboard - 8h
+3. [open] Compare vector databases (research: vector databases) - 4h
+Total estimate: 18h
+```
+
+Deliberate practice checklist:
+
+- Write the interfaces first.
+- Write the abstract class second.
+- Write one subclass and test it.
+- Add the other subclasses.
+- Write the repository.
+- Write the service.
+- Write the demo.
+- Refactor once for naming and access modifiers.
+- Run the script.
+- Explain the design in your own words.
+
+### 7. Mini test: Final exam
+
+Take this without notes after completing the project.
+
+1. Define class, object, and instance.
+2. Explain property vs method.
+3. Explain constructor and `this`.
+4. Explain public, private, and protected.
+5. Explain static and give one use case.
+6. Explain inheritance, `extends`, and `super`.
+7. Explain method overriding.
+8. Explain abstract class.
+9. Explain interface.
+10. Explain `implements`.
+11. Explain interface vs abstract class.
+12. Explain polymorphism.
+13. Explain composition vs inheritance.
+14. Explain dependency injection.
+15. In your final project, where did you use polymorphism?
+16. In your final project, where did you use composition?
+17. In your final project, where did you use dependency injection?
+18. Predict the output:
+
+```ts
+interface Writer {
+  write(): void;
+}
+
+abstract class BaseWriter implements Writer {
+  private static nextId = 1;
+  protected id: number;
+
+  constructor(public name: string) {
+    this.id = BaseWriter.nextId;
+    BaseWriter.nextId += 1;
+  }
+
+  abstract write(): void;
+
+  describe(): void {
+    console.log(`${this.id}: ${this.name}`);
+  }
+}
+
+class FileWriter extends BaseWriter {
+  override write(): void {
+    console.log(`file ${this.id}`);
+  }
+}
+
+class ConsoleWriter extends BaseWriter {
+  override write(): void {
+    console.log(`console ${this.id}`);
+  }
+}
+
+const writers: BaseWriter[] = [
+  new FileWriter("A"),
+  new ConsoleWriter("B"),
+];
+
+for (const writer of writers) {
+  writer.describe();
+  writer.write();
+}
+```
+
+19. Refactor this bad code using interface + composition + dependency injection:
+
+```ts
+class EmailSender {
+  send(message: string): void {
+    console.log(`Email: ${message}`);
+  }
+}
+
+class BillingService extends EmailSender {
+  charge(): void {
+    console.log("Charging customer");
+    this.send("Receipt");
+  }
+}
+```
+
+20. Choose interface or abstract class:
+   - Anything that can be exported has `export(): string`.
+   - All API clients share `baseUrl`, `headers`, and retry behavior.
+   - Anything that can be clicked has `click(): void`.
+   - All game characters share health and movement code, but attack differently.
+
+### Answer key
+
+1. A class is a blueprint; an object is a concrete value; an instance is an object created from a specific class.
+2. A property stores data; a method performs behavior.
+3. A constructor initializes a new object; `this` refers to the current object.
+4. `public` is accessible anywhere; `private` only inside the declaring class; `protected` inside the declaring class and subclasses.
+5. `static` belongs to the class, not one object. Example: ID generation counter.
+6. Inheritance creates a subclass from a parent class using `extends`; `super` calls parent constructor or methods.
+7. Overriding is replacing a parent method implementation in a subclass using the same method name/signature.
+8. An abstract class cannot be instantiated and can define shared code plus required abstract methods.
+9. An interface is a TypeScript contract describing required shape/capability.
+10. `implements` means a class explicitly satisfies an interface.
+11. Interface is best for contracts without shared implementation. Abstract class is best when subclasses need shared code/state.
+12. Polymorphism is using a common type while different concrete objects provide different behavior.
+13. Inheritance models "is a"; composition models "has a" or "uses a."
+14. Dependency injection means passing dependencies into a class from outside, often through the constructor.
+15. In `printReport()`, `TaskService` loops over `Task[]` and calls overridden methods without checking concrete task classes.
+16. `TaskService` has/uses a repository and notifier. `Task` also has/uses a notifier.
+17. `TaskService` receives repository and notifier through its constructor. `Task` receives notifier through its constructor.
+18. Output:
+
+```txt
+1: A
+file 1
+2: B
+console 2
+```
+
+19. One good refactor:
+
+```ts
+interface MessageSender {
+  send(message: string): void;
+}
+
+class EmailSender implements MessageSender {
+  send(message: string): void {
+    console.log(`Email: ${message}`);
+  }
+}
+
+class BillingService {
+  constructor(private sender: MessageSender) {}
+
+  charge(): void {
+    console.log("Charging customer");
+    this.sender.send("Receipt");
+  }
+}
+```
+
+20. Answers:
+   - Interface.
+   - Abstract class.
+   - Interface.
+   - Abstract class.
+
+### 8. Criteria to proceed
+
+You have finished the course when you can:
+
+- Build the final project without copying the worked example.
+- Explain every required concept in your own words.
+- Refactor false inheritance into composition.
+- Use interfaces for flexible dependencies.
+- Use abstract classes only when shared implementation is useful.
+- Read a basic design pattern and identify the OOP concepts inside it.
+
+---
+
+## Mentor Mode: How We Will Work Together
+
+When you are ready, say:
+
+```txt
+Start Section 1
+```
+
+Then I will mentor you step by step:
+
+1. I will ask you to define the concept before reading.
+2. You will write or predict code.
+3. I will give immediate feedback.
+4. We will fix misunderstandings before moving on.
+5. I will not dump all answers upfront.
+
+When you finish a section, say:
+
+```txt
+Check my Section 1 answers
+```
+
+Bring your code, predictions, and explanations. I will review them like a senior mentor: direct, practical, and focused on making the mental model stick.
